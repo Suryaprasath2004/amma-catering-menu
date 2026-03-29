@@ -1,0 +1,598 @@
+# amma-catering-menu
+a web page for cooks
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>அம்மா கேட்டரிங் - பொருட்கள் பட்டியல்</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700&family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --saffron:#E07B39;
+    --deep:#2C1A0E;
+    --cream:#FDF6ED;
+    --card:#FFFBF5;
+    --accent:#C4522A;
+    --green:#3B6D11;
+    --border:#E8D9C5;
+    --muted:#8B6A4A;
+    --shadow:0 2px 12px rgba(44,26,14,0.1);
+  }
+  body{
+    font-family:'Lato',sans-serif;
+    background:var(--cream);
+    color:var(--deep);
+    min-height:100vh;
+  }
+
+  /* HEADER */
+  header{
+    background: linear-gradient(135deg, #2C1A0E 0%, #5C3317 50%, #2C1A0E 100%);
+    color:#fff;
+    padding:0;
+    position:sticky;top:0;z-index:100;
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);
+  }
+  .header-top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px 14px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+  .logo-block{display:flex;align-items:center;gap:14px}
+  .logo-icon{
+    width:52px;height:52px;border-radius:50%;
+    background:var(--saffron);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;flex-shrink:0;
+  }
+  .logo-text h1{
+    font-family:'Playfair Display',serif;
+    font-size:22px;color:#FFD99A;letter-spacing:0.5px;
+  }
+  .logo-text p{font-size:12px;color:rgba(255,255,255,0.6);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+  .cart-btn{
+    background:var(--saffron);color:#fff;border:none;
+    padding:10px 20px;border-radius:25px;cursor:pointer;
+    font-weight:700;font-size:14px;letter-spacing:0.5px;
+    display:flex;align-items:center;gap:8px;
+    transition:background 0.2s;
+  }
+  .cart-btn:hover{background:var(--accent)}
+  .cart-count{
+    background:#fff;color:var(--accent);
+    border-radius:50%;width:20px;height:20px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;
+  }
+
+  .header-controls{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 32px;
+  }
+  .search-wrap{position:relative;flex:1;max-width:400px}
+  .search-wrap input{
+    width:100%;padding:9px 16px 9px 38px;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:25px;color:#fff;font-size:14px;
+    outline:none;transition:background 0.2s;
+  }
+  .search-wrap input::placeholder{color:rgba(255,255,255,0.5)}
+  .search-wrap input:focus{background:rgba(255,255,255,0.2)}
+  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:0.6;font-size:15px}
+  .filter-tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{
+    padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;
+    cursor:pointer;border:1px solid rgba(255,255,255,0.25);
+    color:rgba(255,255,255,0.75);background:transparent;
+    transition:all 0.2s;white-space:nowrap;letter-spacing:0.3px;
+  }
+  .tab.active,.tab:hover{background:var(--saffron);color:#fff;border-color:var(--saffron)}
+
+  /* MAIN */
+  main{max-width:1200px;margin:0 auto;padding:28px 24px}
+
+  .summary-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:20px;
+  }
+  .summary-bar h2{
+    font-family:'Playfair Display',serif;
+    font-size:20px;color:var(--deep);
+  }
+  .item-count{
+    background:var(--saffron);color:#fff;
+    padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;
+  }
+
+  /* TABLE */
+  .table-wrap{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  table{width:100%;border-collapse:collapse}
+  thead{background: linear-gradient(90deg, #2C1A0E, #5C3317)}
+  thead th{
+    padding:14px 16px;text-align:left;
+    color:#FFD99A;font-size:12px;
+    font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  }
+  thead th:nth-child(1){width:60px;text-align:center}
+  thead th:nth-child(3){width:100px;text-align:center}
+  thead th:nth-child(4){width:110px;text-align:center}
+  thead th:nth-child(5){width:90px;text-align:center}
+
+  tbody tr{
+    border-bottom:1px solid var(--border);
+    transition:background 0.15s;
+  }
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:hover{background:#FFF3E6}
+  tbody tr.category-row{
+    background: linear-gradient(90deg, #FDF0E0, #FDF6ED);
+  }
+
+  td{padding:12px 16px;font-size:14px;color:var(--deep)}
+  td:nth-child(1){text-align:center;color:var(--muted);font-size:12px;font-weight:600}
+
+  .cat-label{
+    font-family:'Noto Sans Tamil',sans-serif;
+    font-weight:700;font-size:13px;color:var(--accent);
+    text-transform:uppercase;letter-spacing:0.5px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .cat-label::before{
+    content:'';display:inline-block;
+    width:4px;height:16px;border-radius:2px;
+    background:var(--saffron);flex-shrink:0;
+  }
+
+  .item-name{
+    font-family:'Noto Sans Tamil',sans-serif;
+    font-size:14px;color:var(--deep);font-weight:500;
+  }
+
+  .qty-cell{display:flex;align-items:center;gap:4px;justify-content:center}
+  .qty-input{
+    width:62px;padding:6px 8px;text-align:center;
+    border:1.5px solid var(--border);border-radius:8px;
+    font-size:14px;font-weight:600;color:var(--deep);
+    background:#fff;outline:none;transition:border-color 0.2s;
+  }
+  .qty-input:focus{border-color:var(--saffron)}
+  .qty-input:not([value='']) , .qty-input[value]:not([value='0']){
+    border-color:var(--green);
+  }
+
+  .unit-sel{
+    padding:6px 8px;border:1.5px solid var(--border);
+    border-radius:8px;font-size:12px;color:var(--muted);
+    background:#fff;outline:none;cursor:pointer;
+    transition:border-color 0.2s;
+  }
+  .unit-sel:focus{border-color:var(--saffron)}
+
+  .add-btn{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--saffron);color:#fff;border:none;
+    font-size:18px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background 0.2s,transform 0.1s;flex-shrink:0;
+  }
+  .add-btn:hover{background:var(--accent)}
+  .add-btn:active{transform:scale(0.9)}
+  .add-btn.added{background:var(--green)}
+
+  .status-cell{text-align:center}
+  .badge{
+    display:inline-block;padding:3px 10px;border-radius:20px;
+    font-size:11px;font-weight:700;letter-spacing:0.3px;
+  }
+  .badge-added{background:#E8F5E9;color:var(--green)}
+  .badge-empty{background:#F5F5F5;color:#999;font-weight:400}
+
+  /* CART PANEL */
+  .cart-overlay{
+    display:none;position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);
+  }
+  .cart-overlay.open{display:block}
+  .cart-panel{
+    position:fixed;right:0;top:0;bottom:0;width:400px;max-width:95vw;
+    background:#fff;z-index:201;
+    display:flex;flex-direction:column;
+    box-shadow:-4px 0 24px rgba(0,0,0,0.2);
+    transform:translateX(100%);transition:transform 0.3s ease;
+  }
+  .cart-panel.open{transform:translateX(0)}
+  .cart-header{
+    padding:20px 24px;
+    background: linear-gradient(135deg, #2C1A0E, #5C3317);
+    color:#fff;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .cart-header h3{font-family:'Playfair Display',serif;font-size:20px;color:#FFD99A}
+  .close-btn{
+    background:rgba(255,255,255,0.15);border:none;color:#fff;
+    width:32px;height:32px;border-radius:50%;font-size:18px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .close-btn:hover{background:rgba(255,255,255,0.25)}
+  .cart-body{flex:1;overflow-y:auto;padding:16px 24px}
+  .cart-empty{
+    text-align:center;padding:60px 20px;
+    color:var(--muted);font-size:15px;
+  }
+  .cart-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 0;border-bottom:1px solid var(--border);
+    gap:8px;
+  }
+  .cart-item-name{
+    font-family:'Noto Sans Tamil',sans-serif;
+    font-size:13px;color:var(--deep);flex:1;
+  }
+  .cart-item-qty{
+    font-size:13px;font-weight:700;color:var(--saffron);
+    white-space:nowrap;
+  }
+  .cart-remove{
+    background:none;border:none;color:#ccc;cursor:pointer;
+    font-size:16px;padding:2px;transition:color 0.2s;
+  }
+  .cart-remove:hover{color:var(--accent)}
+  .cart-footer{
+    padding:20px 24px;border-top:1px solid var(--border);
+  }
+  .cart-total{
+    display:flex;justify-content:space-between;
+    font-weight:700;font-size:15px;margin-bottom:14px;color:var(--deep);
+  }
+  .print-btn{
+    width:100%;padding:13px;background:var(--saffron);color:#fff;
+    border:none;border-radius:10px;font-size:15px;font-weight:700;
+    cursor:pointer;transition:background 0.2s;letter-spacing:0.5px;
+  }
+  .print-btn:hover{background:var(--accent)}
+
+  /* PRINT STYLES */
+  @media print{
+    header,#cartOverlay,.add-btn,.cart-btn,.filter-tabs,.search-wrap,.summary-bar .item-count{display:none!important}
+    .table-wrap{box-shadow:none;border:1px solid #ccc}
+    body{background:#fff}
+    .qty-input,.unit-sel{border:1px solid #ccc}
+    thead{background:#2C1A0E!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+
+  @media(max-width:768px){
+    .header-top{padding:14px 16px}
+    .header-controls{padding:8px 16px;flex-wrap:wrap}
+    main{padding:16px 12px}
+    thead th:nth-child(4),td:nth-child(4){display:none}
+    .cart-panel{width:100vw}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo-block">
+      <div class="logo-icon">🍲</div>
+      <div class="logo-text">
+        <h1>அம்மா கேட்டரிங்</h1>
+        <p>Amma Catering &nbsp;·&nbsp; Ingredients Order Form</p>
+      </div>
+    </div>
+    <button class="cart-btn" onclick="openCart()">
+      🛒 Cart
+      <div class="cart-count" id="cartCount">0</div>
+    </button>
+  </div>
+  <div class="header-controls">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search items in Tamil or English..." oninput="filterItems()">
+    </div>
+    <div class="filter-tabs" id="filterTabs"></div>
+  </div>
+</header>
+
+<main>
+  <div class="summary-bar">
+    <h2>பொருட்கள் விபரம் — Ingredients List</h2>
+    <div class="item-count" id="shownCount">300 items</div>
+  </div>
+  <div class="table-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>பொருட்கள் / Item Name</th>
+          <th>அளவு / Quantity</th>
+          <th>அலகு / Unit</th>
+          <th>நிலை / Status</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</main>
+
+<!-- Cart -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <h3>🛒 Order Summary</h3>
+    <button class="close-btn" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty">No items added yet.<br>Enter quantities and click + to add.</div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total Items:</span>
+      <span id="cartTotal">0 items</span>
+    </div>
+    <button class="print-btn" onclick="printOrder()">🖨️ Print / Download Order</button>
+  </div>
+</div>
+
+<script>
+const RAW_DATA = [
+  {cat:"மளிகை பொருட்கள்",items:[
+    "மஞ்சள் தூள்","வத்தி குங்குமம்","கற்பூரம்","வெற்றிலை","பாக்கு",
+    "நெ .1 துவரம் பருப்பு","நெ .1 பாசி பருப்பு","வெள்ளை குண்டு உளுந்து","பாம்பே கடலை பருப்பு",
+    "முந்திரி பருப்பு (உடைப்பு)","பாதாம் பருப்பு","பிஸ்தா பருப்பு","சாரப் பருப்பு","பட்ட பீன்ஸ்",
+    "பச்சை மணிலா பருப்பு","வெள்ளை காராமணி பருப்பு","வெள்ளை கொண்டை கடலை","ரங்கோன் மொச்சை",
+    "பச்சை பட்டாணி","வெள்ளரி விதை","மிளகு","சீரகம்","முழுமல்லி","பெருஞ்சீரகம்",
+    "குண்டு காய்ந்த மிளகாய்","நீட்டு காய்ந்த மிளகாய்","L.G.தூள் பெருங்காயம்","L.G. கட்டி பெருங்காயம்",
+    "வெந்தியம்","சிறிய கடுகு","கசகசா","போட்டு கடலை","முழு போட்டு கடலை","ரஸ்க் தூள்",
+    "வெள்ளை காராமணி பயிர்","புது புளி","பழைய புளி","காய்ந்த லட்டு பூண்டு","காய்ந்த நாட்டு பூண்டு",
+    "மைதா மாவு (நாகா)","கோதுமை மாவு (ட்ரு)","மீனாட்சி அரிசி மாவு","மீனாட்சி கடலை மாவு",
+    "கான்பிளவர் மாவு","சம்பா கோதுமை","குலாப் ஜாமுன் பவுடர் (MTR)","கொள்ளு",
+    "தோல் நீக்கிய திணை","வெல்லம்","பனை வெல்லம்","பனங்கற்கண்டு","மல்லி தூள்","மிளகு தூள்",
+    "ஆச்சி தனி மிளகாய்தூள்","ஆச்சி குழம்பு மிளகாய்தூள்","ஆச்சி சிக்கன் மசாலா","ஆச்சி மட்டன் மசாலா",
+    "ஆச்சி கரம் மசாலா","சர்க்கரை","கற்கண்டு","டைமென்ட் சர்க்கரை","நெ. 1 ரவை",
+    "சம்பா கோதுமை ரவை (மதிர்லேண்ட்)","மேகி நூடுல்ஸ் சேமியா","நைலான் பொடி ஜவ்வரிசி","ட்ரு சேமியா",
+    "சேவை ரைஸ் இடியாப்ப சேமியா","பாதாம் மிக்ஸர் (MTR)","கஸ்தூரி மேத்தி","சன்ன மசாலா",
+    "மாஸ் பவுடர்","பூஸ்ட்","ஹார்லிக்ஸ்","அமுல் ஸ்பிரே","அமுல் பவுடர்","சன்ரைஸ் காபித்தூள்",
+    "ப்ரு காபித்தூள்","டாப் ஸ்டார் டீத்தூள்","நரசுஸ் காபித்தூள்","சிக்கரி","துணி சோப்","சபீனா",
+    "நெ. 1 மிளகு அப்பளப்பூ","பாப்புலர் அப்பளம்","அப்பளப்பூ (ஸ்பெஷல்)","ஜவ்வரிசி அப்பளம்"
+  ]},
+  {cat:"கலர் & எசன்ஸ்",items:[
+    "கேசரி கலர் பவுடர்","ஆரஞ்சு ரெட் கலர் பவுடர்","லெமன் கலர் பவுடர்","பச்சை கலர் பவுடர்",
+    "ரோஸ் எசன்ஸ்","ரோஸ் மில்க் எசன்ஸ்","கிரேப் எசன்ஸ்","வெண்ணிலா எசன்ஸ்","பாதாம் எசன்ஸ்",
+    "பிஸ்தா எசன்ஸ்","பைனாப்பிள் எசன்ஸ்","ஹைட்ரோஸ்","கெட்டி அவுல்","பச்சை கற்பூரம்",
+    "ஜாதிக்காய்","ஏலக்காய்","உலர்ந்த திராடிச்சை","செரிப்பழம்","டூட்டி புருட்டி (4 கலர்)","குங்குமப்பூ"
+  ]},
+  {cat:"எண்ணெய் & கொழுப்பு வகைகள்",items:[
+    "நெய் ரோஸ் பிராண்ட் (or)RKG","சன்பிளவர் ஆயில் S.V.S","S.V.D. தேங்காய் எண்ணெய்",
+    "இதயம் நல்லெண்ணெய்","V.V.D தேங்காய் எண்ணெய்","ஆவின் வெண்ணெய்","ரைஸ் அடப்பிரதமை",
+    "மக்ரோனி","சுவீட் கோவா","சுவீட் இல்லாத பால்கோவா","பன்னீர் பட்டர்","S.V.S டால்டா (வனஸ்பதி)",
+    "TATA சால்ட் உப்பு","கல் உப்பு","பேக்கிங் பவுடர்","R.P சோடா உப்பு","அஜினமோட்டோ (ரெட்கப்)"
+  ]},
+  {cat:"அரிசி வகைகள்",items:[
+    "நெ.1 பாசுமதி அரிசி","நெ.1 பொன்னி பச்சரிசி (மயூரி)","அமெரிக்கன் பொன்னி ஆப்பாயில்",
+    "பொன்மணி மாவு பச்சரிசி","பொன்மணி இட்லி அரிசி","ஈஸ்ட்","மணத்தக்காளி வத்தல்",
+    "சுண்டக்காய் வத்தல்","வெள்ளக்காடி வினிகர்","ரோல் ப்ரெட்","மில்க் மெய்டு","மீல் மேக்கர்",
+    "லவங்கம்","பட்டை","பிரிஞ்சி இலை","மோர் மிளகாய்","வெள்ளை எள்ளு","கலர் வத்தல்",
+    "மைசூரடால் பயிறு","தேன்","தக்காளி சாஸ்","சில்லி சாஸ்","சோயா சாஸ்","ஓமம்",
+    "விதை இல்லாத பேரிச்சம்பழம்","சுக்குத்தூள்"
+  ]},
+  {cat:"பேக்கேஜிங் & கிளீனிங்",items:[
+    "கலர் துண்டு பெரியது","மீனாட்சி காடா துணி","மில்க் நைஸ் காடா துணி","சில்வர் ரேக் பேப்பர்",
+    "பட்டர் ஷீட் பேப்பர்","ரோல் பேப்பர் பெரியது","கை கிளவ்ஸ்","மந்தார இலை",
+    "சாம்பார் வடைக்கப்+ஸ்பூன்","தர்மாகோல் இடியாப்ப பிளேட்","குளோப்ஜாமுன் அட்டை கப்",
+    "குளோப்ஜாமுன் ஸ்பூன்","நூடுல்ஸ் (ஸ்பார்க்) ஸ்பூன்","மினி இட்லி கப் +ஸ்பூன் (பெரியது)",
+    "டிஸ்யு பேப்பர்","கேட்ரிங் கேப்","75ml அட்டை காபி கப்","200ml அட்டை கப்",
+    "மினெரல் வாட்டர் 500ml","ஸ்வீட் கூடை கப்","தீப்பெட்டி","மெழுகு"
+  ]},
+  {cat:"பால் வகைகள்",items:[
+    "ஐஸ்பார்","ஸ்வீட் பீடா (இரவு)","இரவு ஐஸ்கிரீம்","மதியம் ஐஸ்கிரீம்",
+    "இரவு பால்","காலை பால்","மதியம் பால்","இரவு தயிர்","காலை தயிர்","மதியம் தயிர்",
+    "கரவை பசும்பால் ஸ்வீட்டுக்காக","பன்னீர்","டிபன் வாழை இலை","சாப்பாடு முனை வாழை இலை"
+  ]},
+  {cat:"பழவகைகள்",items:[
+    "பழவகைகள்","தென் கதளி (அ) மலைப்பழம்","பைனாப்பிள்","பன்னீர் திராட்சை",
+    "மாதுளம்பழம் ஒயிட்","பலாப்பழம்","ஆப்பிள்","மாம்பழம்","சிட்லஸ் திராட்சை",
+    "பப்பாளிப்பழம்","கிர்ணி பழம்","சாத்துக்குடி","ஆரஞ்சுப்பழம்","பூவம்பழம்","ஏலக்கி வாழைப்பழம்"
+  ]},
+  {cat:"காய்கறிகள்",items:[
+    "எலுமிச்சம்பழம்","கேரட் பெரியது","நூக்கல்","சவ்சவ்","பீன்ஸ்","கோஸ்",
+    "பேபிகான் (பிஞ்சு சோளம்)","பல்லாரி வெங்காயம்","சின்ன வெங்காயம்","பச்சை மிளகாய்",
+    "குடை மிளகாய்","உருளைக்கிழங்கு (பெரியது)","நாட்டு கத்திரிக்காய்","நாட்டு தக்காளிப்பழம்",
+    "ஜாம் தக்காளிப்பழம்","நாட்டு அவரைக்காய்","இஞ்சி","முருங்கைக்காய்",
+    "புடலங்காய் (கசப்பு இல்லாமல்)","பீர்க்கங்காய்","கொத்தவரங்காய்","முள்ளங்கி",
+    "பாகற்காய்","புதினா தழை","மல்லி தழை","கருவேப்பிலை","நீளமாங்காய்",
+    "ஒட்டுமாங்காய் (புளிப்பு இல்லாமல்)","வெள்ளரி பிஞ்சு","காலிபிளவர் (பெரிய பூ)",
+    "கல்யாண பூசணிக்காய் முற்றியது","பரங்கிக்காய் பெரியது","வாழைக்காய் முற்றியது",
+    "பீட்ரூட் பெரியது","அரை கீரை","கீரை தண்டு","சிறு கீரை","முளை கீரை",
+    "வாழைத்தண்டு","சட்டி கரணை","வடிசாக்கு","வெங்காயத்தாள்","மஸ்ரூம் (காளான்)",
+    "பச்சைக்காய் பட்டாணி","நெத்து தேங்காய் பெரியது"
+  ]},
+  {cat:"பாத்திரம் வகைகள்",items:[
+    "முழு வட்டா மூடியுடன்","3/4 வட்டா மூடியுடன்","1/2 வட்டா மூடியுடன்","பொருட்கள்",
+    "1/4 வட்டா மூடியுடன்","முழு அடுக்கு மூடியுடன்","3/4 அடுக்கு மூடியுடன்",
+    "1/2 அடுக்கு மூடியுடன்","1/4 அடுக்கு மூடியுடன்","பிரியாணி சட்டி","பிரியாணி கபிகர்",
+    "கம்பி அடுப்பு","சில்வர் வாளி + கரண்டி","சில்வர் அன்னக்கூடை","அன்னவெட்டி",
+    "சில்வெர் பேஷன்","சில்வர் தட்டு","எண்ணெய் வாணல்","சர்க்கரை வாணல்",
+    "பரோட்டா அடுப்பு பெரியது","ஆப்ப அடுப்பு","இரட்டை அடுப்பு","ஒத்த அடுப்பு",
+    "நான் அடுப்பு (பாரல் பெரியது)","காய்ந்த அடுப்பு கரி","தோசை திருப்பி","பூரி கட்டை",
+    "சில்வர் காய்சீவும் கட்டை","கிளாஸ்","சில்வர் ஜக்கு","கைப்பிடி குவளை",
+    "கொத்துக்கிண்ணம்","மினி இட்லிப்பானை","மாற்று தட்டுடன்","காபி கேன்","காபி பில்டர்",
+    "வடி கூடை","அருவாமனை","தேங்காய் திருவும் மிஷின்","மிக்ஸி","சிலிண்டர்",
+    "கிரைண்டர் பெரியது","சில்வர் டேபிள்","செங்கல்","மண்ணெண்ணை","காய்ந்த சவுக்கு விறகு",
+    "ஹாட்பாக்ஸ்","ட்ரே","சில்வர் பிளேட்","பாரல்","பெட்ஷீட் பெரியது","கசங்கு கூடை"
+  ]}
+];
+
+const UNITS=["கிலோ","கிராம்","லிட்டர்","மி.லி","எண்ணிக்கை","பாக்கெட்","பவுன்","டஜன்"];
+const CATS=RAW_DATA.map(c=>c.cat);
+let activeFilter="all";
+let cartItems={};
+let rowData=[];
+
+function buildData(){
+  rowData=[];
+  let n=1;
+  RAW_DATA.forEach(c=>{
+    rowData.push({type:"cat",label:c.cat,id:"cat_"+c.cat});
+    c.items.forEach(name=>{
+      rowData.push({type:"item",num:n++,name,cat:c.cat,id:"item_"+n});
+    });
+  });
+}
+
+function buildTabs(){
+  const container=document.getElementById("filterTabs");
+  const allBtn=`<button class="tab active" onclick="setFilter('all',this)">All</button>`;
+  const catBtns=CATS.map(c=>`<button class="tab" onclick="setFilter('${c.replace(/'/g,"\\'")}',this)">${c}</button>`).join("");
+  container.innerHTML=allBtn+catBtns;
+}
+
+function setFilter(cat,el){
+  activeFilter=cat;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  el.classList.add("active");
+  renderTable();
+}
+
+function filterItems(){renderTable()}
+
+function renderTable(){
+  const q=document.getElementById("searchInput").value.trim().toLowerCase();
+  const tbody=document.getElementById("tableBody");
+  let html="";
+  let shown=0;
+  rowData.forEach(row=>{
+    if(row.type==="cat"){
+      if(activeFilter!=="all"&&row.label!==activeFilter)return;
+      html+=`<tr class="category-row"><td></td><td colspan="4"><span class="cat-label">${row.label}</span></td></tr>`;
+    } else {
+      if(activeFilter!=="all"&&row.cat!==activeFilter)return;
+      if(q&&!row.name.toLowerCase().includes(q))return;
+      const inCart=cartItems[row.num];
+      shown++;
+      html+=`<tr id="row_${row.num}">
+        <td>${row.num}</td>
+        <td><span class="item-name">${row.name}</span></td>
+        <td>
+          <div class="qty-cell">
+            <input type="number" min="0" step="0.5" class="qty-input" id="qty_${row.num}" value="${inCart?inCart.qty:''}" placeholder="0" onchange="syncQty(${row.num})">
+          </div>
+        </td>
+        <td>
+          <div class="qty-cell">
+            <select class="unit-sel" id="unit_${row.num}" onchange="syncQty(${row.num})">
+              ${UNITS.map(u=>`<option value="${u}"${inCart&&inCart.unit===u?" selected":""}>${u}</option>`).join("")}
+            </select>
+          </div>
+        </td>
+        <td class="status-cell">
+          <button class="add-btn${inCart?" added":""}" id="btn_${row.num}" onclick="addToCart(${row.num},'${row.name.replace(/'/g,"\\'")}')">+</button>
+          ${inCart?`<span class="badge badge-added">✓ Added</span>`:`<span class="badge badge-empty">—</span>`}
+        </td>
+      </tr>`;
+    }
+  });
+  tbody.innerHTML=html;
+  document.getElementById("shownCount").textContent=shown+" items";
+}
+
+function syncQty(num){
+  if(cartItems[num]){
+    cartItems[num].qty=document.getElementById("qty_"+num).value||0;
+    cartItems[num].unit=document.getElementById("unit_"+num).value;
+    updateCart();
+  }
+}
+
+function addToCart(num,name){
+  const qtyEl=document.getElementById("qty_"+num);
+  const unitEl=document.getElementById("unit_"+num);
+  const qty=parseFloat(qtyEl.value)||1;
+  const unit=unitEl.value;
+  if(!qtyEl.value)qtyEl.value=qty;
+  cartItems[num]={name,qty,unit,num};
+  updateCart();
+  renderTable();
+}
+
+function removeFromCart(num){
+  delete cartItems[num];
+  updateCart();
+  renderTable();
+}
+
+function updateCart(){
+  const keys=Object.keys(cartItems);
+  document.getElementById("cartCount").textContent=keys.length;
+  document.getElementById("cartTotal").textContent=keys.length+" items";
+  const body=document.getElementById("cartBody");
+  if(!keys.length){
+    body.innerHTML='<div class="cart-empty">No items added yet.<br>Enter quantities and click + to add.</div>';
+    return;
+  }
+  let html="";
+  keys.forEach(k=>{
+    const it=cartItems[k];
+    html+=`<div class="cart-item">
+      <span class="cart-item-name">${it.name}</span>
+      <span class="cart-item-qty">${it.qty} ${it.unit}</span>
+      <button class="cart-remove" onclick="removeFromCart(${it.num})">✕</button>
+    </div>`;
+  });
+  body.innerHTML=html;
+}
+
+function openCart(){
+  document.getElementById("cartOverlay").classList.add("open");
+  document.getElementById("cartPanel").classList.add("open");
+}
+function closeCart(){
+  document.getElementById("cartOverlay").classList.remove("open");
+  document.getElementById("cartPanel").classList.remove("open");
+}
+
+function printOrder(){
+  const keys=Object.keys(cartItems);
+  if(!keys.length){alert("No items in your order yet!");return}
+  const rows=keys.map((k,i)=>{
+    const it=cartItems[k];
+    return `<tr><td>${i+1}</td><td style="font-family:'Noto Sans Tamil',sans-serif">${it.name}</td><td>${it.qty}</td><td>${it.unit}</td></tr>`;
+  }).join("");
+  const win=window.open("","_blank");
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <title>அம்மா கேட்டரிங் - Order</title>
+  <style>body{font-family:Lato,sans-serif;padding:32px;max-width:720px;margin:auto}
+  h1{font-size:24px;color:#2C1A0E;margin-bottom:4px}
+  p{color:#888;margin-bottom:24px;font-size:13px}
+  table{width:100%;border-collapse:collapse}
+  th{background:#2C1A0E;color:#FFD99A;padding:10px 14px;text-align:left;font-size:12px;letter-spacing:1px;text-transform:uppercase}
+  td{padding:10px 14px;border-bottom:1px solid #eee;font-size:14px}
+  tr:last-child td{border-bottom:none}
+  @media print{button{display:none}}</style></head>
+  <body>
+  <h1>அம்மா கேட்டரிங்</h1>
+  <p>Order Date: ${new Date().toLocaleDateString("en-IN")} | Total: ${keys.length} items</p>
+  <table><thead><tr><th>#</th><th>Item / பொருள்</th><th>Qty</th><th>Unit</th></tr></thead>
+  <tbody>${rows}</tbody></table>
+  <br><button onclick="window.print()" style="padding:10px 24px;background:#E07B39;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:15px">Print</button>
+  </body></html>`);
+  win.document.close();
+}
+
+buildData();
+buildTabs();
+renderTable();
+</script>
+</body>
+</html>
